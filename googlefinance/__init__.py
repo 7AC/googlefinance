@@ -10,26 +10,27 @@ except ImportError:  # python 2
 __author__ = 'Hongtao Cai'
 
 googleFinanceKeyToFullName = {
-    u'id'     : u'ID',
-    u't'      : u'StockSymbol',
-    u'e'      : u'Index',
-    u'l'      : u'LastTradePrice',
-    u'l_cur'  : u'LastTradeWithCurrency',
-    u'ltt'    : u'LastTradeTime',
-    u'lt_dts' : u'LastTradeDateTime',
-    u'lt'     : u'LastTradeDateTimeLong',
-    u'div'    : u'Dividend',
-    u'yld'    : u'Yield',
-    u's'      : u'LastTradeSize',
-    u'c'      : u'Change',
-    u'c'      : u'ChangePercent',
-    u'el'     : u'ExtHrsLastTradePrice',
-    u'el_cur' : u'ExtHrsLastTradeWithCurrency',
-    u'elt'    : u'ExtHrsLastTradeDateTimeLong',
-    u'ec'     : u'ExtHrsChange',
-    u'ecp'    : u'ExtHrsChangePercent',
+    u'id': u'ID',
+    u't': u'StockSymbol',
+    u'e': u'Index',
+    u'l': u'LastTradePrice',
+    u'l_cur': u'LastTradeWithCurrency',
+    u'ltt': u'LastTradeTime',
+    u'lt_dts': u'LastTradeDateTime',
+    u'lt': u'LastTradeDateTimeLong',
+    u'div': u'Dividend',
+    u'yld': u'Yield',
+    u's': u'LastTradeSize',
+    u'c': u'Change',
+    u'c': u'ChangePercent',
+    u'el': u'ExtHrsLastTradePrice',
+    u'el_cur': u'ExtHrsLastTradeWithCurrency',
+    u'elt': u'ExtHrsLastTradeDateTimeLong',
+    u'ec': u'ExtHrsChange',
+    u'ecp': u'ExtHrsChangePercent',
     u'pcls_fix': u'PreviousClosePrice'
 }
+
 
 def buildUrl(symbols):
     symbol_list = ','.join([symbol for symbol in symbols])
@@ -37,9 +38,11 @@ def buildUrl(symbols):
     return 'http://finance.google.com/finance/info?client=ig&q=' \
         + symbol_list
 
+
 def buildNewsUrl(symbol, qs='&start=0&num=1000'):
-   return 'http://www.google.com/finance/company_news?output=json&q=' \
+    return 'http://www.google.com/finance/company_news?output=json&q=' \
         + symbol + qs
+
 
 def request(symbols):
     url = buildUrl(symbols)
@@ -50,16 +53,17 @@ def request(symbols):
     content = content[3:]
     return content
 
+
 def requestNews(symbol):
     url = buildNewsUrl(symbol)
-    print "url: ", url
+    print("url: ", url)
     req = Request(url)
     resp = urlopen(req)
     content = resp.read()
 
     content_json = demjson.decode(content)
 
-    #print "total news: ", content_json['total_number_of_news']
+    # print "total news: ", content_json['total_number_of_news']
 
     article_json = []
     news_json = content_json['clusters']
@@ -69,6 +73,7 @@ def requestNews(symbol):
                 article_json.extend(cluster[article])
 
     return article_json
+
 
 def replaceKeys(quotes):
     global googleFinanceKeyToFullName
@@ -80,6 +85,7 @@ def replaceKeys(quotes):
                 qReadableKey[googleFinanceKeyToFullName[k]] = q[k]
         quotesWithReadableKey.append(qReadableKey)
     return quotesWithReadableKey
+
 
 def getQuotes(symbols):
     '''
@@ -102,10 +108,12 @@ def getQuotes(symbols):
     if type(symbols) == type('str'):
         symbols = [symbols]
     content = json.loads(request(symbols))
-    return replaceKeys(content);
+    return replaceKeys(content)
+
 
 def getNews(symbol):
-    return requestNews(symbol);
+    return requestNews(symbol)
+
 
 if __name__ == '__main__':
     try:
@@ -116,4 +124,4 @@ if __name__ == '__main__':
     symbols = symbols.split(',')
 
     print(json.dumps(getNews("GOOG"), indent=2))
-    print(json.dumps(getQuotes(symbols), indent=2))        
+    print(json.dumps(getQuotes(symbols), indent=2))
